@@ -1,5 +1,6 @@
 package com.ems.controller;
 
+import com.ems.dto.EmployeeDTO;
 import com.ems.entity.Employee;
 import com.ems.service.EmployeeService;
 import lombok.extern.slf4j.Slf4j;
@@ -9,8 +10,12 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
+import java.time.LocalDateTime;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Slf4j
 @RestController
@@ -23,12 +28,15 @@ public class EmployeeController {
 
     @GetMapping
     @PreAuthorize("hasAnyRole('USER', 'ADMIN')")
-    public ResponseEntity<List<Employee>> getAllEmployees() {
+    public ResponseEntity<List<EmployeeDTO>> getAllEmployees() {
         log.info("📨 API Request: GET /employees");
         try {
             List<Employee> employees = employeeService.getAllEmployees();
-            log.info("📤 API Response: Successfully retrieved {} employees", employees.size());
-            return ResponseEntity.ok(employees);
+            List<EmployeeDTO> employeeDTOs = employees.stream()
+                .map(this::convertToDTO)
+                .collect(Collectors.toList());
+            log.info("📤 API Response: Successfully retrieved {} employees", employeeDTOs.size());
+            return ResponseEntity.ok(employeeDTOs);
         } catch (Exception e) {
             log.error("❌ API Error in getAllEmployees: {}", e.getMessage(), e);
             throw e;
@@ -37,13 +45,14 @@ public class EmployeeController {
 
     @GetMapping("/{id}")
     @PreAuthorize("hasAnyRole('USER', 'ADMIN')")
-    public ResponseEntity<Employee> getEmployeeById(@PathVariable Long id) {
+    public ResponseEntity<EmployeeDTO> getEmployeeById(@PathVariable Long id) {
         log.info("📨 API Request: GET /employees/{}", id);
         try {
             Optional<Employee> employee = employeeService.getEmployeeById(id);
             if (employee.isPresent()) {
+                EmployeeDTO employeeDTO = convertToDTO(employee.get());
                 log.info("📤 API Response: Employee found - ID={}", id);
-                return ResponseEntity.ok(employee.get());
+                return ResponseEntity.ok(employeeDTO);
             } else {
                 log.warn("⚠️ API Response: Employee not found - ID={}", id);
                 return ResponseEntity.notFound().build();
@@ -75,12 +84,15 @@ public class EmployeeController {
 
     @GetMapping("/department/{department}")
     @PreAuthorize("hasAnyRole('USER', 'ADMIN')")
-    public ResponseEntity<List<Employee>> getEmployeesByDepartment(@PathVariable String department) {
+    public ResponseEntity<List<EmployeeDTO>> getEmployeesByDepartment(@PathVariable String department) {
         log.info("📨 API Request: GET /employees/department/{}", department);
         try {
             List<Employee> employees = employeeService.getEmployeesByDepartment(department);
-            log.info("📤 API Response: Found {} employees in department: {}", employees.size(), department);
-            return ResponseEntity.ok(employees);
+            List<EmployeeDTO> employeeDTOs = employees.stream()
+                .map(this::convertToDTO)
+                .collect(Collectors.toList());
+            log.info("📤 API Response: Found {} employees in department: {}", employeeDTOs.size(), department);
+            return ResponseEntity.ok(employeeDTOs);
         } catch (Exception e) {
             log.error("❌ API Error in getEmployeesByDepartment({}): {}", department, e.getMessage(), e);
             throw e;
@@ -133,5 +145,47 @@ public class EmployeeController {
             log.error("❌ API Error in deleteEmployee({}): {}", id, e.getMessage(), e);
             throw e;
         }
+    }
+
+    @GetMapping("/count")
+    @PreAuthorize("hasAnyRole('USER', 'ADMIN')")
+    public ResponseEntity<Map<String, Object>> getEmployeeCount() {
+        log.info("📊 API Request: GET /employees/count");
+        try {
+            List<Employee> employees = employeeService.getAllEmployees();
+            long count = employees.size();
+            Map<String, Object> response = new HashMap<>();
+            response.put("count", count);
+            response.put("timestamp", LocalDateTime.now());
+            log.info("📤 API Response: Employee count = {}", count);
+            return ResponseEntity.ok(response);
+        } catch (Exception e) {
+            log.error("❌ API Error in getEmployeeCount: {}", e.getMessage(), e);
+            throw e;
+        }
+    }
+
+    private EmployeeDTO convertToDTO(Employee employee) {
+        return EmployeeDTO.builder()
+            .id(employee.getId())
+            .employeeId(employee.getEmployeeId())
+            .firstName(employee.getUser().getFirstName())
+            .lastName(employee.getUser().getLastName())
+            .email(employee.getUser().getEmail())
+            .username(employee.getUser().getUsername())
+            .department(employee.getDepartment())
+            .position(employee.getPosition())
+            .salary(employee.getSalary())
+            .hireDate(employee.getHireDate())
+            .phone(employee.getPhone())
+            .address(employee.getAddress())
+            .city(employee.getCity())
+            .state(employee.getState())
+            .zipCode(employee.getZipCode())
+            .country(employee.getCountry())
+            .dateOfBirth(employee.getDateOfBirth())
+            .createdAt(employee.getCreatedAt())
+            .updatedAt(employee.getUpdatedAt())
+            .build();
     }
 }

@@ -1,5 +1,6 @@
 package com.ems.security;
 
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -15,6 +16,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import java.io.IOException;
 
+@Slf4j
 public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
     @Autowired
@@ -28,19 +30,26 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             throws ServletException, IOException {
         try {
             String jwt = getJwtFromRequest(request);
+            log.debug("JWT Filter - Request URI: {}, JWT present: {}", request.getRequestURI(), jwt != null);
 
             if (StringUtils.hasText(jwt) && tokenProvider.validateToken(jwt)) {
                 String username = tokenProvider.getUsernameFromToken(jwt);
+                log.debug("JWT Filter - Valid token for user: {}", username);
+                
                 UserDetails userDetails = userDetailsService.loadUserByUsername(username);
+                log.debug("JWT Filter - User authorities: {}", userDetails.getAuthorities());
 
                 UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(
                         userDetails, null, userDetails.getAuthorities());
                 authentication.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
 
                 SecurityContextHolder.getContext().setAuthentication(authentication);
+                log.debug("JWT Filter - Authentication set for user: {}", username);
+            } else if (StringUtils.hasText(jwt)) {
+                log.warn("JWT Filter - Invalid token provided");
             }
         } catch (Exception ex) {
-            logger.error("Could not set user authentication in security context", ex);
+            log.error("JWT Filter - Could not set user authentication in security context", ex);
         }
 
         filterChain.doFilter(request, response);

@@ -10,6 +10,10 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.time.LocalDateTime;
+import java.util.HashMap;
+import java.util.Map;
+
 @Slf4j
 @RestController
 @RequestMapping("/auth")
@@ -51,5 +55,14 @@ public class AuthController {
     public ResponseEntity<String> health() {
         log.debug("🏥 Health check endpoint called");
         return ResponseEntity.ok("API is running");
+    }
+
+    @GetMapping("/status")
+    public ResponseEntity<Map<String, Object>> status() {
+        log.debug("📊 Status check endpoint called");
+        Map<String, Object> status = new HashMap<>();
+        status.put("api", "running");
+        status.put("timestamp", LocalDateTime.now());
+        return ResponseEntity.ok(status);
     }
 }

@@ -20,7 +20,7 @@ spring:
       path: /h2-console
       settings:
         trace: false
-        web-allow-others: false
+        web-allow-others: true
   liquibase:
     change-log: classpath:db/changelog/db.changelog-master.xml
     enabled: true
@@ -41,7 +41,7 @@ springdoc:
   show-actuator: true
 
 jwt:
-  secret: your-secret-key-change-this-in-production-environment-with-strong-key
+  secret: mySecretKeyForJWTTokenGenerationThatIsLongEnoughAndSecureForProductionUse123456789
   expiration: 86400000
 
 logging:

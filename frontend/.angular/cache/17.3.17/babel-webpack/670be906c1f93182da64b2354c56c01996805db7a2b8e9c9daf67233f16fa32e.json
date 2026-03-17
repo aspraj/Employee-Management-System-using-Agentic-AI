@@ -1,0 +1,1 @@
+{"ast":null,"code":"import { Router } from '@angular/router';\nexport const AuthGuard = (route, state) => {\n  const router = route.router || new Router();\n  const token = localStorage.getItem('token');\n  if (token) {\n    return true;\n  }\n  router.navigate(['/login']);\n  return false;\n};","map":null,"metadata":{},"sourceType":"module","externalDependencies":[]}

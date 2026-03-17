@@ -17,15 +17,20 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
+/**
+ * EmployeeController - Handles all web requests for employee operations (like a receptionist)
+ */
 @Slf4j
 @RestController
 @RequestMapping("/employees")
 @CrossOrigin(origins = "http://localhost:4200")
 public class EmployeeController {
 
+    /** Service that handles employee business logic */
     @Autowired
     private EmployeeService employeeService;
 
+    /** Get all employees - returns complete employee directory */
     @GetMapping
     @PreAuthorize("hasAnyRole('USER', 'ADMIN')")
     public ResponseEntity<List<EmployeeDTO>> getAllEmployees() {
@@ -43,6 +48,7 @@ public class EmployeeController {
         }
     }
 
+    /** Get specific employee by database ID */
     @GetMapping("/{id}")
     @PreAuthorize("hasAnyRole('USER', 'ADMIN')")
     public ResponseEntity<EmployeeDTO> getEmployeeById(@PathVariable Long id) {
@@ -63,6 +69,7 @@ public class EmployeeController {
         }
     }
 
+    /** Get employee by work badge ID (like EMP001) */
     @GetMapping("/employee-id/{employeeId}")
     @PreAuthorize("hasAnyRole('USER', 'ADMIN')")
     public ResponseEntity<Employee> getEmployeeByEmployeeId(@PathVariable String employeeId) {
@@ -82,6 +89,7 @@ public class EmployeeController {
         }
     }
 
+    /** Get all employees in specific department */
     @GetMapping("/department/{department}")
     @PreAuthorize("hasAnyRole('USER', 'ADMIN')")
     public ResponseEntity<List<EmployeeDTO>> getEmployeesByDepartment(@PathVariable String department) {
@@ -99,6 +107,7 @@ public class EmployeeController {
         }
     }
 
+    /** Create new employee - ADMIN only */
     @PostMapping
     @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<Employee> createEmployee(
@@ -116,6 +125,7 @@ public class EmployeeController {
         }
     }
 
+    /** Update existing employee info - ADMIN only */
     @PutMapping("/{id}")
     @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<Employee> updateEmployee(
@@ -133,6 +143,7 @@ public class EmployeeController {
         }
     }
 
+    /** Delete employee - ADMIN only (permanent removal) */
     @DeleteMapping("/{id}")
     @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<Void> deleteEmployee(@PathVariable Long id) {
@@ -147,6 +158,7 @@ public class EmployeeController {
         }
     }
 
+    /** Get total employee count - for debugging/monitoring */
     @GetMapping("/count")
     @PreAuthorize("hasAnyRole('USER', 'ADMIN')")
     public ResponseEntity<Map<String, Object>> getEmployeeCount() {
@@ -165,6 +177,7 @@ public class EmployeeController {
         }
     }
 
+    /** Convert Employee entity to DTO for clean API responses */
     private EmployeeDTO convertToDTO(Employee employee) {
         return EmployeeDTO.builder()
             .id(employee.getId())

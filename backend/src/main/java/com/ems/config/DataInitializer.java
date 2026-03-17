@@ -16,21 +16,29 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Random;
 
+/**
+ * DataInitializer - Creates default users and sample employees when app starts
+ */
 @Slf4j
 @Component
 public class DataInitializer implements CommandLineRunner {
 
+    /** Repository for user database operations */
     @Autowired
     private UserRepository userRepository;
 
+    /** Repository for employee database operations */
     @Autowired
     private EmployeeRepository employeeRepository;
 
+    /** Password encoder for secure password storage */
     @Autowired
     private PasswordEncoder passwordEncoder;
 
+    /** Random number generator for creating realistic sample data */
     private final Random random = new Random();
 
+    /** Sample first names for generating employee data */
     private final List<String> firstNames = Arrays.asList(
         "John", "Jane", "Michael", "Sarah", "David", "Emily", "Robert", "Lisa", "James", "Maria",
         "William", "Jennifer", "Richard", "Linda", "Joseph", "Elizabeth", "Thomas", "Barbara", "Christopher", "Susan",
@@ -39,6 +47,7 @@ public class DataInitializer implements CommandLineRunner {
         "Edward", "Michelle", "Ronald", "Laura", "Timothy", "Sarah", "Jason", "Kimberly", "Jeffrey", "Deborah"
     );
 
+    /** Sample last names for generating employee data */
     private final List<String> lastNames = Arrays.asList(
         "Smith", "Johnson", "Williams", "Brown", "Jones", "Garcia", "Miller", "Davis", "Rodriguez", "Martinez",
         "Hernandez", "Lopez", "Gonzalez", "Wilson", "Anderson", "Thomas", "Taylor", "Moore", "Jackson", "Martin",
@@ -47,11 +56,13 @@ public class DataInitializer implements CommandLineRunner {
         "Green", "Adams", "Nelson", "Baker", "Hall", "Rivera", "Campbell", "Mitchell", "Carter", "Roberts"
     );
 
+    /** Company departments for assigning employees */
     private final List<String> departments = Arrays.asList(
         "Engineering", "Marketing", "Sales", "Human Resources", "Finance", "Operations", 
         "Customer Service", "IT Support", "Research & Development", "Quality Assurance"
     );
 
+    /** Job positions/titles for employees */
     private final List<String> positions = Arrays.asList(
         "Software Engineer", "Senior Developer", "Project Manager", "Business Analyst", "Marketing Specialist",
         "Sales Representative", "HR Manager", "Financial Analyst", "Operations Manager", "Customer Support",
@@ -59,17 +70,20 @@ public class DataInitializer implements CommandLineRunner {
         "UX Designer", "DevOps Engineer", "Technical Lead", "Account Manager", "Consultant"
     );
 
+    /** US cities for employee addresses */
     private final List<String> cities = Arrays.asList(
         "New York", "Los Angeles", "Chicago", "Houston", "Phoenix", "Philadelphia", "San Antonio", "San Diego",
         "Dallas", "San Jose", "Austin", "Jacksonville", "Fort Worth", "Columbus", "Charlotte", "San Francisco",
         "Indianapolis", "Seattle", "Denver", "Washington", "Boston", "El Paso", "Nashville", "Detroit", "Oklahoma City"
     );
 
+    /** US state abbreviations */
     private final List<String> states = Arrays.asList(
         "NY", "CA", "IL", "TX", "AZ", "PA", "TX", "CA", "TX", "CA", "TX", "FL", "TX", "OH", "NC", "CA",
         "IN", "WA", "CO", "DC", "MA", "TX", "TN", "MI", "OK"
     );
 
+    /** Main method that runs when application starts - creates admin user and 50 sample employees */
     @Override
     public void run(String... args) throws Exception {
         try {
@@ -182,6 +196,7 @@ public class DataInitializer implements CommandLineRunner {
         }
     }
 
+    /** Generate realistic salary based on job position */
     private Double generateRandomSalary(String position) {
         // Base salary ranges by position type
         if (position.contains("Manager") || position.contains("Lead")) {
@@ -195,12 +210,14 @@ public class DataInitializer implements CommandLineRunner {
         }
     }
 
+    /** Generate random hire date between 30 days and 10 years ago */
     private LocalDate generateRandomHireDate() {
         // Generate hire date between 1 and 10 years ago
         int daysAgo = random.nextInt(3650) + 30; // 30 days to 10 years ago
         return LocalDate.now().minusDays(daysAgo);
     }
 
+    /** Generate realistic US phone number format */
     private String generateRandomPhone() {
         return String.format("(%03d) %03d-%04d", 
             200 + random.nextInt(800), 
@@ -208,16 +225,19 @@ public class DataInitializer implements CommandLineRunner {
             1000 + random.nextInt(9000));
     }
 
+    /** Generate random street address */
     private String generateRandomAddress() {
         int streetNumber = 100 + random.nextInt(9900);
         String[] streetNames = {"Main St", "Oak Ave", "Pine Rd", "Elm St", "Maple Ave", "Cedar Ln", "Park Blvd", "First St", "Second Ave", "Third St"};
         return streetNumber + " " + streetNames[random.nextInt(streetNames.length)];
     }
 
+    /** Generate 5-digit ZIP code */
     private String generateRandomZipCode() {
         return String.format("%05d", 10000 + random.nextInt(90000));
     }
 
+    /** Generate birth date for employees aged 22-65 years */
     private LocalDate generateRandomDateOfBirth() {
         // Generate birth date for ages between 22 and 65
         int ageInDays = (22 * 365) + random.nextInt(43 * 365); // 22-65 years old

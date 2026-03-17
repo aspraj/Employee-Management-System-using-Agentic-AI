@@ -19,7 +19,7 @@ CREATE TABLE employees (
     employee_id VARCHAR(50) NOT NULL UNIQUE,
     department VARCHAR(100),
     position VARCHAR(100),
-    salary DECIMAL(10, 2),
+    salary DOUBLE,
     hire_date DATE,
     phone VARCHAR(20),
     address VARCHAR(255),

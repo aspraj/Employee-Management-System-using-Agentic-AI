@@ -131,7 +131,11 @@ public class EmployeeServiceTest {
 
     @Test
     void testDeleteEmployee() {
+        when(employeeRepository.findById(1L)).thenReturn(Optional.of(testEmployee));
+        
         employeeService.deleteEmployee(1L);
+        
+        verify(employeeRepository, times(1)).findById(1L);
         verify(employeeRepository, times(1)).deleteById(1L);
     }
 }

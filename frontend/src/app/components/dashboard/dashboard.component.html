@@ -1,0 +1,12 @@
+<div class="dashboard">
+  <nav class="navbar">
+    <div class="navbar-brand">EMS</div>
+    <div class="navbar-links">
+      <button (click)="navigateTo('employees')" class="nav-btn">Employees</button>
+      <button (click)="logout()" class="nav-btn logout-btn">Logout ({{ username }})</button>
+    </div>
+  </nav>
+  <div class="content">
+    <router-outlet></router-outlet>
+  </div>
+</div>

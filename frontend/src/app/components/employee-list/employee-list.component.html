@@ -1,0 +1,28 @@
+<div class="employee-list">
+  <h2>Employees</h2>
+  <div *ngIf="error" class="error-message">{{ error }}</div>
+  <div *ngIf="loading" class="loading">Loading employees...</div>
+  <table *ngIf="!loading && employees.length > 0" class="employee-table">
+    <thead>
+      <tr>
+        <th>ID</th>
+        <th>Employee ID</th>
+        <th>Department</th>
+        <th>Position</th>
+        <th>Salary</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr *ngFor="let emp of employees">
+        <td>{{ emp.id }}</td>
+        <td>{{ emp.employeeId }}</td>
+        <td>{{ emp.department }}</td>
+        <td>{{ emp.position }}</td>
+        <td>{{ emp.salary | currency }}</td>
+      </tr>
+    </tbody>
+  </table>
+  <div *ngIf="!loading && employees.length === 0" class="no-data">
+    No employees found
+  </div>
+</div>
